@@ -69,16 +69,6 @@ void loop() {
     }
     switch (stage) {
     case SLEEP: {
-
-        if (millis() - sleep_timer > TIME_BEFORE_NORMALIZE && !normalized) {
-            normalized = true;
-            if (record > 150) {
-                record = indicatorNormalize();
-                sleep_timer = millis();
-            }
-
-        }
-
          // executing one time when sleep is on
         if (sleep_started) {
             sleep_started = false;
@@ -118,8 +108,10 @@ void loop() {
         // if doesn't rotating TIME_BEFORE_SLEEP ms then sleep
         if (millis() - display_timer > TIME_BEFORE_SLEEP) {
             stage = SLEEP;
-            normalized = false;
-            sleep_timer = millis();
+            if (record > 150) {
+                record = indicatorNormalize();
+                sleep_timer = millis();
+            }
         }
         break;
     }
