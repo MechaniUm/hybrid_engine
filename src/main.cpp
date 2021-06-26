@@ -17,8 +17,7 @@ enum Stage {
 Stage stage = SLEEP;
 
 double charge = 0.0;
-int record = 0;
-int time = 0;
+int32_t record = 0;
 long long last_action_time = 0;
 long long start_time = 0;
 long long charge_timer = 0;
@@ -29,9 +28,9 @@ boolean sleep_started = true;
 boolean electric_lamp_enable = false;
 
 Encoder encoder(2, 3);
-int last_value = 0;
-int start_value = 0;
-int new_value = 0;
+int32_t last_value = 0;
+int32_t start_value = 0;
+int32_t new_value = 0;
 boolean electric_started = false;
 boolean slowing = false;
 boolean magnet_disabled = true;
@@ -65,7 +64,14 @@ ISR(TIMER5_A) {
 void loop() {
     new_value = encoder.read();
     if (last_value > new_value) {
-        encoder.reset(last_value);
+        last_value = 0;
+        new_value = 0;
+        encoder.reset(0);
+    }
+    if (new_value > ENCODER_TRESHOLD) {
+        int32_t tmp = new_value - last_value;
+        last_value = 0;
+        new_value = tmp;
     }
     switch (stage) {
     case SLEEP: {
@@ -245,7 +251,6 @@ void loop() {
         }
         // disable boost when charge < STEPPER_BOOST_STOP_CHARGE
         if (boosted && !slowing && charge < STEPPER_BOOST_STOP_CHARGE) {
-            // boosted = false;
             stepperBoostOff();
             slowing = true;
         }
@@ -254,7 +259,6 @@ void loop() {
             boosted = false;
             stepperResume();
             electric_started = true;
-            // electric_started = true;
         }
 
         if (millis() - last_action_time > TIME_BEFORE_WAIT) {

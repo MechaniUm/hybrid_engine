@@ -20,7 +20,7 @@ void stepperResume() {
     stepper.setSpeed(-STEPPER_SPEED);
     stepper.setMaxSpeed(STEPPER_SPEED);
     stepper.setAcceleration(STEPPER_ACCELERATION);
-    stepper.moveTo(-999999999);
+    stepper.moveTo(-2147483647);
 }
 
 void stepperStop() {
@@ -34,8 +34,7 @@ void stepperRun() {
 void stepperStart() {
 
     stepper.setCurrentPosition(0);
-    // can it overflow???
-    stepper.moveTo(-9999999);
+    stepper.moveTo(-2147483647);
 }
 
 void stepperBoostOn() {
